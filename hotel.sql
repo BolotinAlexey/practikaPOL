@@ -5,14 +5,13 @@ SET time_zone = "+00:00";
 
 
 CREATE TABLE Room (
-    room_id INT NOT NULL AUTO_INCREMENT,
     room_number VARCHAR(10) NOT NULL,
     room_type VARCHAR(50) NOT NULL,
     room_price DECIMAL(10,2) NOT NULL,
     max_occupancy INT NOT NULL,
     available BOOLEAN NOT NULL,
     floor INT NOT NULL,
-    PRIMARY KEY (room_id)
+    PRIMARY KEY (room_number)
 );
 
 INSERT INTO Room (room_number, room_type, room_price, max_occupancy, available, floor)

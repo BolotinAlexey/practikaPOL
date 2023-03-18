@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hotel Reservation System</title>
+</head>
+<body>
+	<?php
+		// Connect to the database
+		$servername = "localhost";
+		$username = "root";
+		$password = "";
+		$dbname = "hotel_db";
+
+		$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+		if (!$conn) {
+			die("Connection failed: " . mysqli_connect_error());
+		}
+
+		// Check if the user has submitted the reservation form
+		if ($_SERVER["REQUEST_METHOD"] == "POST") {
+			// Retrieve the form data
+			$guest_name = $_POST["guest_name"];
+			$guest_email = $_POST["guest_email"];
+			$room_number = $_POST["room_number"];
+			$check_in_date = $_POST["check_in_date"];
+			$check_out_date = $_POST["check_out_date"];
+
+			// Insert the new reservation into the database
+			$sql = "INSERT INTO Reservation (guest_name, guest_email, room_number, check_in_date, check_out_date) VALUES ('$guest_name', '$guest_email', '$room_number', '$check_in_date', '$check_out_date')";
+
+			if (mysqli_query($conn, $sql)) {
+				echo "Reservation made successfully";
+			} else {
+				echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+			}
+		}
+
+		// Query the database for available rooms
+		$sql = "SELECT * FROM Room WHERE is_available = 1";
+		$result = mysqli_query($conn, $sql);
+
+		if (mysqli_num_rows($result) > 0) {
+			// Display the list of available rooms and reservation form
+			echo "<h1>Available Rooms</h1>";
+			echo "<table>";
+			echo "<tr><th>Room Number</th><th>Room Type</th><th>Price</th><th>Reserve</th></tr>";
+			while ($row = mysqli_fetch_assoc($result)) {
+				echo "<tr><td>" . $row["room_number"] . "</td><td>" . $row["room_type"] . "</td><td>" . $row["price"] . "</td><td>";
+				echo "<form method='post' action='" . $_SERVER["PHP_SELF"] . "'>";
+				echo "<input type='hidden' name='room_number' value='" . $row["room_number"] . "'>";
+				echo "<label for='guest_name'>Name:</label>";
+				echo "<input type='text' id='guest_name' name='guest_name'><br>";
+				echo "<label for='guest_email'>Email:</label>";
+				echo "<input type='email' id='guest_email' name='guest_email'><br>";
+				echo "<label for='check_in_date'>Check-in Date:</label>";
+				echo "<input type='date' id='check_in_date' name='check_in_date'><br>";
+				echo "<label for='check_out_date'>Check-out Date:</label>";
+				echo "<input type='date' id='check_out_date' name='check_out_date'><br>";
+				echo "<input type='submit' value='Reserve'>";
+				echo "</form></td></tr>";
+			}
+			echo "</table>";
+		} else {
+			echo "No rooms available";
+		}
+
+		// Close the database connection
+		mysqli_close($conn);
+	?>
+</body>
+</html>
+
++++++++
+kogda gosti uezgajut Sure, here's an example PHP script to update the database when a guest leaves:
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Check Out</title>
+</head>
+<body>
+	<?php
+		// Connect to the database
+		$servername = "localhost";
+		$username = "root";
+		$password = "";
+		$dbname = "hotel_db";
+
+		$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+		if (!$conn) {
+			die("Connection failed: " . mysqli_connect_error());
+		}
+
+		// Check if the user has submitted the check-out form
+		if ($_SERVER["REQUEST_METHOD"] == "POST") {
+			// Retrieve the form data
+			$room_number = $_POST["room_number"];
+			$check_out_date = $_POST["check_out_date"];
+
+			// Update the room and reservation status in the database
+			$sql = "UPDATE Room SET is_available = 1 WHERE room_number = '$room_number'";
+			mysqli_query($conn, $sql);
+
+			$sql = "UPDATE Reservation SET check_out_date = '$check_out_date' WHERE room_number = '$room_number' AND check_out_date IS NULL";
+			mysqli_query($conn, $sql);
+
+			echo "Check-out completed successfully";
+		}
+
+		// Query the database for active reservations
+		$sql = "SELECT Reservation.reservation_id, Guest.guest_name, Room.room_number, Reservation.check_in_date FROM Reservation INNER JOIN Guest ON Reservation.guest_id = Guest.guest_id INNER JOIN Room ON Reservation.room_number = Room.room_number WHERE Reservation.check_out_date IS NULL";
+		$result = mysqli_query($conn, $sql);
+
+		if (mysqli_num_rows($result) > 0) {
+			// Display the list of active reservations and check-out form
+			echo "<h1>Active Reservations</h1>";
+			echo "<table>";
+			echo "<tr><th>Reservation ID</th><th>Guest Name</th><th>Room Number</th><th>Check-in Date</th><th>Check-out</th></tr>";
+			while ($row = mysqli_fetch_assoc($result)) {
+				echo "<tr><td>" . $row["reservation_id"] . "</td><td>" . $row["guest_name"] . "</td><td>" . $row["room_number"] . "</td><td>" . $row["check_in_date"] . "</td><td>";
+				echo "<form method='post' action='" . $_SERVER["PHP_SELF"] . "'>";
+				echo "<input type='hidden' name='room_number' value='" . $row["room_number"] . "'>";
+				echo "<label for='check_out_date'>Check-out Date:</label>";
+				echo "<input type='date' id='check_out_date' name='check_out_date'>";
+				echo "<input type='submit' value='Check Out'>";
+				echo "</form></td></tr>";
+			}
+			echo "</table>";
+		} else {
+			echo "No active reservations";
+		}
+
+		// Close the database connection
+		mysqli_close($conn);
+	?>
+</body>
+</html>
+
+++++++++
+
+Sure, here's an example PHP script to update the database when a guest checks in:
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Check In</title>
+</head>
+<body>
+	<?php
+		// Connect to the database
+		$servername = "localhost";
+		$username = "root";
+		$password = "";
+		$dbname = "hotel_db";
+
+		$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+		if (!$conn) {
+			die("Connection failed: " . mysqli_connect_error());
+		}
+
+		// Check if the user has submitted the check-in form
+		if ($_SERVER["REQUEST_METHOD"] == "POST") {
+			// Retrieve the form data
+			$guest_name = $_POST["guest_name"];
+			$guest_phone = $_POST["guest_phone"];
+			$room_number = $_POST["room_number"];
+			$check_in_date = $_POST["check_in_date"];
+
+			// Check if the room is available
+			$sql = "SELECT is_available FROM Room WHERE room_number = '$room_number'";
+			$result = mysqli_query($conn, $sql);
+
+			if (mysqli_num_rows($result) > 0) {
+				$row = mysqli_fetch_assoc($result);
+				if ($row["is_available"] == 0) {
+					echo "The room is already occupied";
+				} else {
+					// Insert the guest and reservation data into the database
+					$sql = "INSERT INTO Guest (guest_name, guest_phone) VALUES ('$guest_name', '$guest_phone')";
+					mysqli_query($conn, $sql);
+
+					$guest_id = mysqli_insert_id($conn);
+
+					$sql = "UPDATE Room SET is_available = 0 WHERE room_number = '$room_number'";
+					mysqli_query($conn, $sql);
+
+					$sql = "INSERT INTO Reservation (guest_id, room_number, check_in_date) VALUES ('$guest_id', '$room_number', '$check_in_date')";
+					mysqli_query($conn, $sql);
+
+					echo "Check-in completed successfully";
+				}
+			} else {
+				echo "Invalid room number";
+			}
+		}
+
+		// Display the check-in form
+		echo "<h1>Check In</h1>";
+		echo "<form method='post' action='" . $_SERVER["PHP_SELF"] . "'>";
+		echo "<label for='guest_name'>Guest Name:</label>";
+		echo "<input type='text' id='guest_name' name='guest_name' required>";
+		echo "<label for='guest_phone'>Guest Phone:</label>";
+		echo "<input type='tel' id='guest_phone' name='guest_phone' required>";
+		echo "<label for='room_number'>Room Number:</label>";
+		echo "<input type='text' id='room_number' name='room_number' required>";
+		echo "<label for='check_in_date'>Check-in Date:</label>";
+		echo "<input type='date' id='check_in_date' name='check_in_date' required>";
+		echo "<input type='submit' value='Check In'>";
+		echo "</form>";
+
+		// Close the database connection
+		mysqli_close($conn);
+	?>
+</body>
+</html>
+
+++++++++++++
+
+I assume that you mean updating the database when the guests enter the room after checking in. Here's an example PHP script to update the database when the guests enter the room:
+Я предполагаю, что вы имеете в виду обновление базы данных, когда гости входят в комнату после регистрации. Вот пример сценария PHP для обновления базы данных, когда гости входят в комнату:
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Guest Entry</title>
+</head>
+<body>
+	<?php
+		// Connect to the database
+		$servername = "localhost";
+		$username = "root";
+		$password = "";
+		$dbname = "hotel_db";
+
+		$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+		if (!$conn) {
+			die("Connection failed: " . mysqli_connect_error());
+		}
+
+		// Check if the user has submitted the guest entry form
+		if ($_SERVER["REQUEST_METHOD"] == "POST") {
+			// Retrieve the form data
+			$guest_id = $_POST["guest_id"];
+			$room_number = $_POST["room_number"];
+			$entry_time = $_POST["entry_time"];
+
+			// Update the reservation data in the database
+			$sql = "UPDATE Reservation SET entry_time = '$entry_time' WHERE guest_id = '$guest_id' AND room_number = '$room_number'";
+			mysqli_query($conn, $sql);
+
+			echo "Guest entry time updated successfully";
+		}
+
+		// Display the guest entry form
+		echo "<h1>Guest Entry</h1>";
+		echo "<form method='post' action='" . $_SERVER["PHP_SELF"] . "'>";
+		echo "<label for='guest_id'>Guest ID:</label>";
+		echo "<input type='text' id='guest_id' name='guest_id' required>";
+		echo "<label for='room_number'>Room Number:</label>";
+		echo "<input type='text' id='room_number' name='room_number' required>";
+		echo "<label for='entry_time'>Entry Time:</label>";
+		echo "<input type='time' id='entry_time' name='entry_time' required>";
+		echo "<input type='submit' value='Update Entry Time'>";
+		echo "</form>";
+
+		// Close the database connection
+		mysqli_close($conn);
+	?>
+</body>
+</html>
+
+
+
++++++
+
+Here's an example of a PHP website for administering the hotel database. It includes a login page for authentication, a dashboard for viewing and managing the hotel's reservations, rooms, guests, and employees, and forms for adding, editing, and deleting records.
+
+index.php (login page):
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login</title>
+</head>
+<body>
+	<h1>Login</h1>
+	<form method="post" action="login.php">
+		<label for="username">Username:</label>
+		<input type="text" id="username" name="username" required>
+		<br><br>
+		<label for="password">Password:</label>
+		<input type="password" id="password" name="password" required>
+		<br><br>
+		<input type="submit" value="Login">
+	</form>
+</body>
+</html>
+
++++++
+login.php (processes login credentials):
+
+<?php
+	session_start();
+
+	// Connect to the database
+	$servername = "localhost";
+	$username = "root";
+	$password = "";
+	$dbname = "hotel_db";
+
+	$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+	if (!$conn) {
+		die("Connection failed: " . mysqli_connect_error());
+	}
+
+	// Retrieve the login credentials
+	$username = $_POST["username"];
+	$password = $_POST["password"];
+
+	// Check if the credentials are valid
+	$sql = "SELECT * FROM Employee WHERE username='$username' AND password='$password'";
+	$result = mysqli_query($conn, $sql);
+
+	if (mysqli_num_rows($result) == 1) {
+		// Save the employee's ID and username in a session variable
+		$row = mysqli_fetch_assoc($result);
+		$_SESSION["employee_id"] = $row["id"];
+		$_SESSION["username"] = $row["username"];
+
+		// Redirect to the dashboard
+		header("Location: dashboard.php");
+	} else {
+		// Display an error message and go back to the login page
+		echo "Invalid username or password";
+		echo "<br><br>";
+		echo "<a href='index.php'>Go back to login page</a>";
+	}
+
+	// Close the database connection
+	mysqli_close($conn);
+?>
+
+
+++++++
+dashboard.php (main page after login):
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Dashboard</title>
+</head>
+<body>
+	<h1>Welcome <?php echo $_SESSION["username"]; ?>!</h1>
+	<h2>Reservations</h2>
+	<table>
+		<tr>
+			<th>ID</th>
+			<th>Guest ID</th>
+			<th>Room Number</th>
+			<th>Check-in Date</th>
+			<th>Check-out Date</th>
+			<th>Entry Time</th>
+			<th>Exit Time</th>
+			<th>Action</th>
+		</tr>
+		<?php
+			// Connect to the database
+			$servername = "localhost";
+			$username = "root";
+			$password = "";
+			$dbname = "hotel_db";
+
+			$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+			if (!$conn) {
+				die("Connection failed: " . mysqli_connect_error());
+			}
+
+			// Retrieve the list of reservations
+			$sql = "SELECT * FROM Reservation";
+			$result = mysqli_query($conn, $sql);
+
+			if (mysqli_num_rows($result) > 0) {
+				// Output the list of reservations
+				while ($row = mysqli_fetch_assoc($result))
+			{
+				echo "<tr>";
+				echo "<td>" . $row["id"] . "</td>";
+				echo "<td>" . $row["guest_id"] . "</td>";
+				echo "<td>" . $row["room_number"] . "</td>";
+				echo "<td>" . $row["checkin_date"] . "</td>";
+				echo "<td>" . $row["checkout_date"] . "</td>";
+				echo "<td>" . $row["entry_time"] . "</td>";
+				echo "<td>" . $row["exit_time"] . "</td>";
+				echo "<td><a href='edit_reservation.php?id=" . $row["id"] . "'>Edit</a> | <a href='delete_reservation.php?id=" . $row["id"] . "'>Delete</a></td>";
+				echo "</tr>";
+			}
+		} else {
+			// Output a message if there are no reservations
+			echo "<tr><td colspan='8'>No reservations found</td></tr>";
+		}
+
+		// Close the database connection
+		mysqli_close($conn);
+	?>
+</table>
+<br>
+<a href="add_reservation.php">Add new reservation</a>
+<h2>Rooms</h2>
+<table>
+	<tr>
+		<th>Number</th>
+		<th>Type</th>
+		<th>Capacity</th>
+		<th>Price</th>
+		<th>Action</th>
+	</tr>
+	<?php
+		// Connect to the database
+		$servername = "localhost";
+		$username = "root";
+		$password = "";
+		$dbname = "hotel_db";
+
+		$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+		if (!$conn) {
+			die("Connection failed: " . mysqli_connect_error());
+		}
+
+		// Retrieve the list of rooms
+		$sql = "SELECT * FROM Room";
+		$result = mysqli_query($conn, $sql);
+
+		if (mysqli_num_rows($result) > 0) {
+			// Output the list of rooms
+			while ($row = mysqli_fetch_assoc($result)) {
+				echo "<tr>";
+				echo "<td>" . $row["number"] . "</td>";
+				echo "<td>" . $row["type"] . "</td>";
+				echo "<td>" . $row["capacity"] . "</td>";
+				echo "<td>" . $row["price"] . "</td>";
+				echo "<td><a href='edit_room.php?number=" . $row["number"] . "'>Edit</a> | <a href='delete_room.php?number=" . $row["number"] . "'>Delete</a></td>";
+				echo "</tr>";
+			}
+		} else {
+			// Output a message if there are no rooms
+			echo "<tr><td colspan='5'>No rooms found</td></tr>";
+		}
+
+		// Close the database connection
+		mysqli_close($conn);
+	?>
+</table>
+<br>
+<a href="add_room.php">Add new room</a>
+
+<h2>Guests</h2>
+<table>
+	<tr>
+		<th>ID</th>
+		<th>Name</th>
+		<th>Address</th>
+		<th>Phone Number</th>
+		<th>Email</th>
+		<th>Action</th>
+	</tr>
+	<?php
+		// Connect to the database
+		$servername = "localhost";
+		$username = "root";
+		$password = "";
+		$dbname = "hotel_db";
+
+		$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+		if (!$conn) {
+die("Connection failed: " . mysqli_connect_error());
+}
+
+
+		// Retrieve the list of guests
+		$sql = "SELECT * FROM Guest";
+		$result = mysqli_query($conn, $sql);
+
+		if (mysqli_num_rows($result) > 0) {
+			// Output the list of guests
+			while ($row = mysqli_fetch_assoc($result)) {
+				echo "<tr>";
+				echo "<td>" . $row["id"] . "</td>";
+				echo "<td>" . $row["name"] . "</td>";
+				echo "<td>" . $row["address"] . "</td>";
+				echo "<td>" . $row["phone_number"] . "</td>";
+				echo "<td>" . $row["email"] . "</td>";
+				echo "<td>";
+				echo "<a href='edit_guest.php?id=" . $row["id"] . "'>Edit</a>";
+				echo " | ";
+				echo "<a href='delete_guest.php?id=" . $row["id"] . "'>Delete</a>";
+				echo "</td>";
+				echo "</tr>";
+			}
+		} else {
+			echo "<tr><td colspan='6'>No guests found</td></tr>";
+		}
+
+		// Close the database connection
+		mysqli_close($conn);
+	?>
+</table>
+<br>
+<a href="add_guest.php">Add Guest</a>
+
+<h2>Employees</h2>
+<table>
+	<tr>
+		<th>ID</th>
+		<th>Name</th>
+		<th>Address</th>
+		<th>Phone Number</th>
+		<th>Email</th>
+		<th>Position</th>
+		<th>Action</th>
+	</tr>
+	<?php
+		// Connect to the database
+		$servername = "localhost";
+		$username = "root";
+		$password = "";
+		$dbname = "hotel_db";
+
+		$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+		if (!$conn) {
+			die("Connection failed: " . mysqli_connect_error());
+		}
+
+		// Retrieve the list of employees
+		$sql = "SELECT * FROM Employee";
+		$result = mysqli_query($conn, $sql);
+
+		if (mysqli_num_rows($result) > 0) {
+			// Output the list of employees
+			while ($row = mysqli_fetch_assoc($result)) {
+				echo "<tr>";
+				echo "<td>" . $row["id"] . "</td>";
+				echo "<td>" . $row["name"] . "</td>";
+				echo "<td>" . $row["address"] . "</td>";
+				echo "<td>" . $row["phone_number"] . "</td>";
+				echo "<td>" . $row["email"] . "</td>";
+				echo "<td>" . $row["position"] . "</td>";
+				echo "<td>";
+				echo "<a href='edit_employee.php?id=" . $row["id"] . "'>Edit</a>";
+				echo " | ";
+				echo "<a href='delete_employee.php?id=" . $row["id"] . "'>Delete</a>";
+				echo "</td>";
+				echo "</tr>";
+			}
+		} else {
+			echo "<tr><td colspan='7'>No employees found</td></tr>";
+		}
+
+		// Close the database connection
+		mysqli_close($conn);
+	?>
+</table>
+<br>
+<a href="add_employee.php">Add Employee</a>
+
+</body>
+</html>
+
