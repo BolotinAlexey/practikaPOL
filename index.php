@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    
     <title>Hotel Reservation System</title>
   </head>
   <body>
+    <header></header>
+    <main>
     <h1>hotel</h1>
-
-
-
-    
- 
 
     <?php
 		// Connect to the database
@@ -51,15 +52,13 @@ $result = mysqli_query($conn, $sql);
 		if (mysqli_num_rows($result) >
     0) {
 
-        echo "<h2>$str</h2>";
-        echo "<h3>Table</h3>";
-//  if (isset($_POST['view'])) {
+   echo " <section class='main'>
 
-  $view=$_POST['view'];
-$_SESSION["v"]=$view;
-// echo $_SESSION["v"];
+  <h2>$str</h2>";
+  if (isset($_POST['view'])) {
 
-  // echo "<script>localStorage.setItem('view', '$view');</script>";
+     $view=$_POST['view'];
+     $_SESSION["v"]=$view;
 
         if ($view=='true') {
            echo "<h3>Table</h3>";
@@ -94,19 +93,14 @@ while ($row = mysqli_fetch_assoc($result)) {
         </div>
       </li> ";
      }
+     echo '</ul>';
     }
-
-
-        
+  }       
 }
-
-
-
-
     mysqli_close($conn);
      ?>
 
-           <form method="POST">
+           <form class="index__form" method="POST">
         <div class="avilable">
  <button name="available" type="submit" value="0">all rooms</button>
  <button name="available" type="submit" value="1">free rooms</button>
@@ -130,5 +124,8 @@ echo '<input type="radio" name="view" value="true" checked>
   </label>foto
  </div>
 </form>
+</section>
+</main>
+<footer></footer>
   </body>
 </html>
