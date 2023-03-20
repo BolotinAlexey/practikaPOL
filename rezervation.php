@@ -33,22 +33,36 @@
 			$check_out_date = $_POST["check_out_date"];
 
 			// Insert the new reservation into the database
-			$sql = "INSERT INTO Guests (guest_name,guest_email,phone_number,address) VALUES ('$guest_name','$guest_email','$phone_number','$adress')";
-			
-			echo $sql;
+			$sql_guest = "INSERT INTO Guests (guest_name,guest_email,phone_number,address) VALUES ('$guest_name','$guest_email','$phone_number','$adress')";
 
-			if (mysqli_query($conn, $sql)) {
-				echo "Reservation made successfully";
-			} else {
-				echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+			$sql_room="UPDATE Room SET available = FALSE WHERE room_number = ".$room_number;
+		
+			
+			if (mysqli_query($conn, $sql_guest)) {
+				$last_id = $conn->insert_id;
+				$sql_reserv="INSERT INTO Reservation (guest_id,room_number,check_in_date,check_out_date) VALUES ('$last_id','$room_number','$check_in_date','$check_out_date')";
+
+				if (mysqli_query($conn, $sql_reserv)) {
+
+					if (mysqli_query($conn, $sql_room)) {
+							echo "Reservation made successfully";
+					}else{
+				echo "Error: " . $sql_room . "<br>" . mysqli_error($conn);}
+					
+				} else{
+				echo "Error: " . $sql_reserv . "<br>" . mysqli_error($conn);}				
 			}
+			 else {
+				echo "Error: " . $sql_guest . "<br>" . mysqli_error($conn);
+		}
+
 		}
 
 		
 
 
 		// Query the database for available rooms
-		$sql = "SELECT * FROM Room WHERE available = 1";
+		$sql = "SELECT * FROM Room WHERE available = TRUE";
 		$result = mysqli_query($conn, $sql);
 
 		if (mysqli_num_rows($result) > 0) {
