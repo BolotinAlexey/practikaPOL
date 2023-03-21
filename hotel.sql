@@ -146,7 +146,7 @@ VALUES
         4,
         TRUE,
         3,
-        'https://pixabay.com/get/gb82459923ee8687019a63296c6c54f5bdcd3adabfe2ef5b72142b1cf4a4004f27401b94b9d140f30f1d4cd56b417e7471e5115c6efa11da0962e66fb8e807c99_1280.jpg'
+        'https://pixabay.com/get/g5eaba96e4a6294f4ed7d31dff52e869e39276c363dff8ad74c5e9e968076b6ed5e72b49e3f2886af0195664ed761820624c303977f6d9626010db00b1b0aad60_1280.jpg'
     ),
     (
         304,
@@ -243,6 +243,8 @@ CREATE TABLE Employee (
     department VARCHAR(50) NOT NULL,
     salary DECIMAL(10, 2) NOT NULL,
     hire_date DATE NOT NULL,
+    login VARCHAR(50),
+    password VARCHAR(50),
     PRIMARY KEY (employee_id)
 );
 
@@ -252,7 +254,9 @@ INSERT INTO
         job_title,
         department,
         salary,
-        hire_date
+        hire_date,
+        login,
+        password
     )
 VALUES
     (
@@ -260,35 +264,45 @@ VALUES
         'Manager',
         'Front Desk',
         50000.00,
-        '2020-01-01'
+        '2020-01-01',
+        'manager',
+        '12345'
     ),
     (
         'Jane Smith',
         'Housekeeper',
         'Housekeeping',
         25000.00,
-        '2020-02-01'
+        '2020-02-01',
+        NULL,
+        NULL
     ),
     (
         'David Lee',
         'Chef',
         'Kitchen',
         45000.00,
-        '2020-03-01'
+        '2020-03-01',
+        NULL,
+        NULL
     ),
     (
         'Sarah Johnson',
         'Waiter',
         'Restaurant',
         15000.00,
-        '2020-04-01'
+        '2020-04-01',
+        NULL,
+        NULL
     ),
     (
         'Michael Chen',
         'Maintenance',
         'Facilities',
         30000.00,
-        '2020-05-01'
+        '2020-05-01',
+        NULL,
+        NULL
     );
 
 CREATE TABLE aa (

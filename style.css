@@ -1,5 +1,20 @@
+* {
+  transition: all 0.2s linear;
+}
+
+button,
+a,
+label,
+input[type="radio"] {
+  cursor: pointer;
+}
+a {
+  text-decoration: none;
+}
+
 ul {
   list-style: none;
+  padding: 0;
 }
 
 img {
@@ -7,13 +22,50 @@ img {
   display: block;
 }
 
+header {
+  padding: 20px 0;
+  background-color: red;
+  display: flex;
+  justify-content: space-between;
+}
+
 h1 {
   text-align: center;
   text-transform: uppercase;
   font-family: "Indie Flower";
-  font-size: 56px;
+  font-size: 2em;
   letter-spacing: 1em;
   text-shadow: 3px 3px rgba(230, 15, 69, 1);
+  margin-bottom: 40px;
+}
+.logo {
+  padding-left: 20px;
+  font-size: 1em;
+  letter-spacing: 0.5em;
+  text-shadow: 2px 2px black;
+  color: white;
+  text-transform: uppercase;
+  font-family: "Indie Flower";
+}
+.login {
+  padding-right: 20px;
+  font-size: 1em;
+  color: white;
+}
+
+table {
+  border: 2px solid black;
+  border-collapse: collapse;
+}
+td,
+th {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 5px 10px;
+  text-align: center;
+}
+tr:nth-of-type(even) {
+  background-color: aliceblue;
 }
 
 h1::first-letter {
@@ -24,11 +76,14 @@ h1::first-letter {
 .card-set {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 20px;
 }
 
 .card {
   width: 100%;
+}
+.card:hover {
+  transform: scale(1.05);
 }
 @media screen and (min-width: 420px) {
   .card {
@@ -38,21 +93,90 @@ h1::first-letter {
 
 @media screen and (min-width: 726px) {
   .card {
-    width: calc(33.333% - 20px);
+    width: calc((100% - 40px) / 3);
   }
 }
 
 @media screen and (min-width: 1280px) {
   .card {
-    width: calc(25% - 30px);
+    width: calc((100% - 60px) / 4);
   }
 }
 
 .main {
+  margin: 0 auto;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
 }
 
 .index__form {
   order: -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.avilable {
+  display: flex;
+  gap: 10px;
+}
+.avilable button {
+  font-size: 1em;
+  padding: 5px 10px;
+  background-color: black;
+  color: red;
+  border: red 1px solid;
+  border-radius: 5px;
+  text-shadow: 1px 1px white;
+}
+.avilable button:hover {
+  background-color: red;
+  color: white;
+}
+
+.view {
+  display: flex;
+  justify-content: space-between;
+}
+
+.describe-foto {
+  display: flex;
+  justify-content: space-between;
+  background-color: black;
+  color: white;
+}
+.describe-foto__item {
+  padding: 15px 10px;
+}
+
+footer {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-size: 1em;
+  font-family: "Indie Flower";
+}
+
+.greeting {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px;
+}
+h3 {
+  margin: 10px;
+}
+.switcher {
+  font-size: 1em;
+  background-color: blue;
+  color: white;
+  border: white 1px solid;
+  border-radius: 5px;
+}
+.switcher:hover {
+  background-color: white;
+  color: blue;
+  border: 1px blue solid;
 }
