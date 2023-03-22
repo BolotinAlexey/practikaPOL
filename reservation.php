@@ -15,7 +15,7 @@
  <header>
 
     <a href="index.php" class="logo">Szalony dom</a>
-    <a href="" class="login"><span>Login</span></a>
+    <a href="login.php" class="login"><span>Login</span></a>
     </header>
 <main class="main__admin">
 
@@ -62,40 +62,25 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 
 			$name = $_POST["name"];			
 			$room = $_POST["room"];
-			// $phone_number = $_POST["phone_number"];
+			$phone_number = $_POST["phone_number"];
 			$check_in_date = $_POST["check_in_date"];
 			$check_out_date = $_POST["check_out_date"];
 
 			// Insert the new guests check in into the database
-			$sql = "INSERT INTO Reservation (room,name,check_in_date,check_out_date) VALUES ('$name','$phone_number','$adress','$room_number','$check_in_date','$check_out_date')";
+			$sql = "INSERT INTO Reservation (room,name,phone_number,check_in_date,check_out_date) VALUES ('$room','$name','$phone_number','$check_in_date','$check_out_date')";
 
-			$sql_room="UPDATE Room SET available = FALSE WHERE room_number = ".$room_number;
+			$sql_room="UPDATE Room SET available = FALSE WHERE room_number = ".$room;
 		
-			echo "DELETE FROM Reservation WHERE reservation_id=".$_POST["reservation_id"];
-			if (mysqli_query($conn, $sql_guest)) {
-				// $last_id = $conn->insert_id;
+			// Insert the new guests check in into the database
+			if (mysqli_query($conn, $sql)) {      
 
-
-
-                if (!empty($_POST["reservation_id"])) {
-
-				$sql_reserv_delete = "DELETE FROM Reservation WHERE reservation_id = ".$_POST["reservation_id"];
-				if (mysqli_query($conn, $sql_reserv_delete)) {
-                    echo "Delete from reservation in made successfully";
-                } else{
-				echo "Error: " . $sql_reserv_delete . "<br>" . mysqli_error($conn);}
-            	}
-                              
-
-
+				// Room.available to FALSE
 				if (mysqli_query($conn, $sql_room)) {
 					echo "Check in made successfully";
                      header('Location: '.$_SERVER["PHP_SELF"]);
                     exit();
 					}else{
 				echo "Error: " . $sql_room . "<br>" . mysqli_error($conn);}
-
-
 							
 			}
 			 else {
@@ -104,54 +89,7 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 
 		}
 
-
-
-            // ------------ check in by guests -------------
-
-	$sqlR = "SELECT * FROM Reservation JOIN Room ON Reservation.room=Room.room_number";
-		$result = mysqli_query($conn, $sqlR);
-
-		if (mysqli_num_rows($result) > 0) {
-
-			// Display the list of available rooms and reservation form
-			echo "<h2>Residential rooms</h2>";
-
-			echo "<table>";
-			echo "<tr><th>Room Number</th><th>Type</th><th>Price</th><th>Max occupancy</th><th>Name</th><th>check in date</th><th>check out date</th><th>Reserve</th></tr>";
-
-			while ($row = mysqli_fetch_assoc($result)) {
-				echo "<tr><td>" . $row["room"] . "</td><td>" . $row["room_type"] . "</td><td>" . $row["room_price"] . "</td><td>" . $row["max_occupancy"] . "</td><td>" . $row["name"] . "</td><td>" . $row["check_in_date"] . "</td><td>" . $row["check_out_date"] . "</td>";
-
-				echo "<td><form method='post' action='" . $_SERVER["PHP_SELF"] . "'>";
-                
-				echo "<input type='hidden' name='room_number' value='" . $row["room_number"] . "'>";
-
-                echo "<input type='hidden' name='reservation_id' value='" . $row["reservation_id"] . "'>";
-
-				echo "<label for='guest_name'>Name:</label>";
-				echo "<input type='text' id='guest_name' name='guest_name' value= '" . $row["name"] . "' ><br>";
-
-				echo "<label for='guest_email'>Email:</label>";
-				echo "<input type='email' id='guest_email' name='guest_email'><br>";
-
-echo "<label for='guest_name'>Phone number:</label>";
-				echo "<input type='text' id='phone_number' name='phone_number'><br>";
-
-				echo "<label for='address'>Address:</label>";
-				echo "<input type='text' id='address' name='address'><br>";
-
-				echo "<label for='check_in_date'>Check-in Date:</label>";
-				echo "<input type='date' id='check_in_date' name='check_in_date' value= '" . $row["check_in_date"] . "' ><br>";
-
-				echo "<label for='check_out_date'>Check-out Date:</label>";
-				echo "<input type='date' id='check_out_date' name='check_out_date' value= '" . $row["check_out_date"] . "' ><br>";
-
-				echo "<input type='submit' value='Check in'>";
-				echo "</form></td></tr>";
-			}
-			echo "</table>";
-		} 
-        // --------------------------------------------
+            // ------------ check in by guests ------------
 
             	// Query the database for available rooms
 		$sql = "SELECT * FROM Room WHERE available = TRUE";
@@ -169,19 +107,13 @@ echo "<label for='guest_name'>Phone number:</label>";
 
 				echo "<form method='post' action='" . $_SERVER["PHP_SELF"] . "'>";
                 
-				echo "<input type='hidden' name='room_number' value='" . $row["room_number"] . "'>";
+				echo "<input type='hidden' name='room' value='" . $row["room_number"] . "'>";
 
-				echo "<label for='guest_name'>Name:</label>";
-				echo "<input type='text' id='guest_name' name='guest_name'><br>";
+				echo "<label for='name'>Name:</label>";
+				echo "<input type='text' id='name' name='name'><br>";
 
-				echo "<label for='guest_email'>Email:</label>";
-				echo "<input type='email' id='guest_email' name='guest_email'><br>";
-
-echo "<label for='guest_name'>Phone number:</label>";
+				echo "<label for='guest_name'>Phone number:</label>";
 				echo "<input type='text' id='phone_number' name='phone_number'><br>";
-
-				echo "<label for='address'>Address:</label>";
-				echo "<input type='text' id='address' name='address'><br>";
 
 				echo "<label for='check_in_date'>Check-in Date:</label>";
 				echo "<input type='date' id='check_in_date' name='check_in_date'><br>";
@@ -189,7 +121,7 @@ echo "<label for='guest_name'>Phone number:</label>";
 				echo "<label for='check_out_date'>Check-out Date:</label>";
 				echo "<input type='date' id='check_out_date' name='check_out_date'><br>";
 
-				echo "<input type='submit' value='Check in'>";
+				echo "<input type='submit' value='Reserve'>";
 				echo "</form></td></tr>";
 			}
 			echo "</table>";

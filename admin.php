@@ -60,7 +60,6 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 			
 			// Retrieve the form data
 			$guest_name = $_POST["guest_name"];
-			
 			$guest_email = $_POST["guest_email"];
 			$room_number = $_POST["room_number"];
 			$phone_number = $_POST["phone_number"];
@@ -73,23 +72,26 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 
 			$sql_room="UPDATE Room SET available = FALSE WHERE room_number = ".$room_number;
 		
-			echo "DELETE FROM Reservation WHERE reservation_id=".$_POST["reservation_id"];
+            // Add to table Guests
 			if (mysqli_query($conn, $sql_guest)) {
 				// $last_id = $conn->insert_id;
 
-
-
+                // If adding from Reservation, delete from reservation
                 if (!empty($_POST["reservation_id"])) {
 
 				$sql_reserv_delete = "DELETE FROM Reservation WHERE reservation_id = ".$_POST["reservation_id"];
 				if (mysqli_query($conn, $sql_reserv_delete)) {
                     echo "Delete from reservation in made successfully";
+                     header('Location: '.$_SERVER["PHP_SELF"]);
+                    exit();
+
                 } else{
 				echo "Error: " . $sql_reserv_delete . "<br>" . mysqli_error($conn);}
             	}
                               
 
-
+                // If adding without Reservation,set 
+                //  Room.available to FALSE
 				if (mysqli_query($conn, $sql_room)) {
 					echo "Check in made successfully";
                      header('Location: '.$_SERVER["PHP_SELF"]);
@@ -115,11 +117,11 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 
 		if (mysqli_num_rows($result) > 0) {
 
-			// Display the list of available rooms and reservation form
+			// Display the list of reservation form
 			echo "<h2>Residential rooms</h2>";
 
 			echo "<table>";
-			echo "<tr><th>Room Number</th><th>Price,pl</th><th>Max occupancy<hr/>Type</th><th>Name<hr/>Phone number</th>  <th>check in date<hr/>check out date</th><th>Reserve</th></tr>";
+			echo "<tr><th>Room Number</th><th>Price,pl</th><th>Max occupancy<hr/>Type</th><th>Name<hr/>Phone number</th>  <th>check in date<hr/>check out date</th><th>Check in</th></tr>";
 
 			while ($row = mysqli_fetch_assoc($result)) {
 				echo "<tr><td>" . $row["room"] . "</td><td>" . $row["room_price"] . "</td><td>" . $row["max_occupancy"] . "</br></br><hr/></br>" . $row["room_type"] ."</td><td>" . $row["name"] . "</br></br><hr/></br>". $row["phone_number"] ."</td><td>" . $row["check_in_date"]. "</br></br><hr/></br>" .$row["check_out_date"]. "</td>";
