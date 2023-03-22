@@ -69,6 +69,11 @@ th {
   padding: 5px 10px;
   text-align: center;
 }
+
+th {
+  background-color: blue;
+  color: white;
+}
 tr:nth-of-type(even) {
   background-color: aliceblue;
 }
@@ -168,6 +173,7 @@ footer {
 .greeting {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin: 20px;
 }
 h3 {
@@ -175,6 +181,8 @@ h3 {
 }
 .switcher {
   font-size: 1em;
+  padding: 5px 10px;
+  margin-left: 10px;
   background-color: blue;
   color: white;
   border: white 1px solid;

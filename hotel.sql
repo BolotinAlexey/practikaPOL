@@ -36,7 +36,7 @@ VALUES
         'Single',
         100.00,
         1,
-        TRUE,
+        FALSE,
         1,
         'https://pixabay.com/get/g4f90912c837d5824524743d7fe0a0e1331c9729d8f996ab98b1fe66ee78731cee96ad80be27d4c3d248f2281dfc24a2aaab5e227af83104289dc1691cefbd7b5_1280.jpg'
     ),
@@ -232,6 +232,7 @@ CREATE TABLE Reservation (
     reservation_id INT NOT NULL AUTO_INCREMENT,
     room INT NOT NULL,
     name VARCHAR(50) NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
     check_in_date DATE NOT NULL,
     check_out_date DATE NOT NULL,
     PRIMARY KEY (reservation_id),
@@ -242,15 +243,29 @@ INSERT INTO
     Reservation (
         room,
         name,
+        phone_number,
         check_in_date,
         check_out_date
     )
 VALUES
-    (101, 'Emily Wilson', '2023-03-20', '2023-03-23'),
-    (105, 'Daniel Kim', '2023-04-05', '2023-04-08'),
+    (
+        101,
+        'Emily Wilson',
+        '1111111',
+        '2023-03-20',
+        '2023-03-23'
+    ),
+    (
+        105,
+        'Daniel Kim',
+        '22222222',
+        '2023-04-05',
+        '2023-04-08'
+    ),
     (
         203,
         'Petro Neugomonny',
+        '3333333',
         '2023-05-01',
         '2023-05-03'
     );

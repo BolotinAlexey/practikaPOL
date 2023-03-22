@@ -32,13 +32,13 @@ if (!isset($_SESSION["login"])) {
 // Display the admin panel
 
 echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
-
+<div class="buttons">
 <form action="liberation.php">
 <button type="submit" class="switcher">Liberation</button></form>
-</div>
 
 <form action="reservation.php">
 <button type="submit" class="switcher">Reservation</button></form>
+</div>
 </div>';
 
 
@@ -55,7 +55,7 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 			die("Connection failed: " . mysqli_connect_error());
 		}
 		
-		// Check if the user has submitted the reservation form
+		// Check in if the user has submitted the reservation form
 		if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			
 			// Retrieve the form data
@@ -108,7 +108,7 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 
 
 
-            // ------------ check-in by guests -------------
+            // ------------ check in by guests -------------
 
 	$sqlR = "SELECT * FROM Reservation JOIN Room ON Reservation.room=Room.room_number";
 		$result = mysqli_query($conn, $sqlR);
@@ -119,10 +119,13 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 			echo "<h2>Residential rooms</h2>";
 
 			echo "<table>";
-			echo "<tr><th>Room Number</th><th>Type</th><th>Price</th><th>Max occupancy</th><th>Name</th><th>check in date</th><th>check out date</th><th>Reserve</th></tr>";
+			echo "<tr><th>Room Number</th><th>Price,pl</th><th>Max occupancy<hr/>Type</th><th>Name<hr/>Phone number</th>  <th>check in date<hr/>check out date</th><th>Reserve</th></tr>";
 
 			while ($row = mysqli_fetch_assoc($result)) {
-				echo "<tr><td>" . $row["room"] . "</td><td>" . $row["room_type"] . "</td><td>" . $row["room_price"] . "</td><td>" . $row["max_occupancy"] . "</td><td>" . $row["name"] . "</td><td>" . $row["check_in_date"] . "</td><td>" . $row["check_out_date"] . "</td>";
+				echo "<tr><td>" . $row["room"] . "</td><td>" . $row["room_price"] . "</td><td>" . $row["max_occupancy"] . "</br></br><hr/></br>" . $row["room_type"] ."</td><td>" . $row["name"] . "</br></br><hr/></br>". $row["phone_number"] ."</td><td>" . $row["check_in_date"]. "</br></br><hr/></br>" .$row["check_out_date"]. "</td>";
+
+                
+                // --------------- inputs ----------------
 
 				echo "<td><form method='post' action='" . $_SERVER["PHP_SELF"] . "'>";
                 
@@ -136,8 +139,8 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 				echo "<label for='guest_email'>Email:</label>";
 				echo "<input type='email' id='guest_email' name='guest_email'><br>";
 
-echo "<label for='guest_name'>Phone number:</label>";
-				echo "<input type='text' id='phone_number' name='phone_number'><br>";
+                echo "<label for='phone_number'>Phone number:</label>";
+				echo "<input type='text' id='phone_number' name='phone_number' value= '" . $row["phone_number"] . "' ><br>";
 
 				echo "<label for='address'>Address:</label>";
 				echo "<input type='text' id='address' name='address'><br>";
