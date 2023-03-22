@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <title>manager panel</title>
+    <title>manager liberation</title>
 </head>
 <body>
 
@@ -17,7 +17,7 @@
     <a href="index.php" class="logo">Szalony dom</a>
     <a href="" class="login"><span>Login</span></a>
     </header>
-<main class="main__available">
+<main class="main__admin">
 
 
 <?php
@@ -32,10 +32,15 @@ if (!isset($_SESSION["login"])) {
 // Display the admin panel
 
 echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
-
+<div class="buttons">
 <form action="admin.php">
-<button type="submit" class="switcher">Available</button></form>
+<button type="submit" class="switcher">Check in</button></form>
+
+<form action="reservation.php">
+<button type="submit" class="switcher">Reservation</button></form>
+</div>
 </div>';
+
 
 // Connect to the database
 		$servername = "localhost";
@@ -45,86 +50,119 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 
 		$conn = mysqli_connect($servername, $username, $password, $dbname);
 
-		if (!$conn) {
-			
+		if (!$conn) {			
 			die("Connection failed: " . mysqli_connect_error());
 		}
 		
-		// Check if the user has submitted the reservation form
+		// Check in if the user has submitted the reservation form
 		if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			
 			// Retrieve the form data
 			$guest_name = $_POST["guest_name"];
-			
-			$guest_email = $_POST["guest_email"];
 			$room_number = $_POST["room_number"];
-			$phone_number = $_POST["phone_number"];
-			$adress = $_POST["address"];
-			$check_in_date = $_POST["check_in_date"];
-			$check_out_date = $_POST["check_out_date"];
+            $guest_id = $_POST["guest_id"];
+            $reservation_id = $_POST["reservation_id"];
 
-			// Insert the new reservation into the database
-			$sql_guest_delete = "DELETE FROM Guests WHERE room_number = $room_number";
+            if (empty(!$guest_id )){
+			// Delete guests from the database
+			$sql_delete = "DELETE FROM Guests WHERE guest_id = ".$guest_id;}
+            
+            elseif(empty(!$reservation_id )){
+            // Delete reservation from the database
+			$sql_delete = "DELETE FROM Reservation WHERE reservation_id = ".$reservation_id;}
 
-			$sql_room="UPDATE Room SET available = FALSE WHERE room_number = ".$room_number;
+            else {
+                echo "Choose someone to delete";
+                     header('Location: '.$_SERVER["PHP_SELF"]);
+                    exit();
+            }
+
+            // Update Room 
+			$sql_room="UPDATE Room SET available = TRUE WHERE room_number = ".$room_number;
 		
-			
-			if (mysqli_query($conn, $sql_guest)) {
-				$last_id = $conn->insert_id;
-				$sql_reserv="INSERT INTO Reservation (guest_id,room_number,check_in_date,check_out_date) VALUES ('$last_id','$room_number','$check_in_date','$check_out_date')";
+            // Delete from Reservation or Guests
+			if (mysqli_query($conn, $sql_delete)) {
 
-				if (mysqli_query($conn, $sql_reserv)) {
+            
+				if (mysqli_query($conn, $sql_room)) {
+                    echo "Delete in made successfully";
+                     header('Location: '.$_SERVER["PHP_SELF"]);
+                    exit();
+                    
+                    } else{
+				    echo "Error: " . $sql_room . " " . mysqli_error($conn);}
 
-					if (mysqli_query($conn, $sql_room)) {
-							echo "Reservation made successfully";
-					}else{
-				echo "Error: " . $sql_room . "<br>" . mysqli_error($conn);}
-					
-				} else{
-				echo "Error: " . $sql_reserv . "<br>" . mysqli_error($conn);}				
+            	}else{
+				echo "Error: " . $sql_delete . " " . mysqli_error($conn);}
+				
+                }
+            // ------------ RESERVATION LIST -------------
+
+	$sqlR = "SELECT * FROM Reservation JOIN Room ON Reservation.room=Room.room_number";
+		$result = mysqli_query($conn, $sqlR);
+
+		if (mysqli_num_rows($result) > 0) {
+
+			// Display the list of reservation form
+			echo "<h2>Residential rooms</h2>";
+
+			echo "<table>";
+			echo "<tr><th>Room Number</th><th>Price</th><th>Name</th><th>Check in</th><th>Check out</th><th>Delete from</br>reservation</th></tr>";
+
+			while ($row = mysqli_fetch_assoc($result)) {
+				echo "<tr><td>" . $row["room"] . "</td><td>" . $row["room_price"] . "</td><td>" . $row["name"] . "</td><td>" . $row["check_in_date"]. "</td><td>" .$row["check_out_date"]. "</td>";
+
+                
+                // ---------- inputs of reservation ------------
+
+				echo "<td><form method='post' action='" . $_SERVER["PHP_SELF"] . "'>";
+                
+				echo "<input type='hidden' name='room_number' value='" . $row["room_number"] . "'>";
+
+                echo "<input type='hidden' name='reservation_id' value='" . $row["reservation_id"] . "'>";
+
+				echo "<button class='delete' type='submit'>DELETE</button></form></td></tr>";
 			}
-			 else {
-				echo "Error: " . $sql_guest . "<br>" . mysqli_error($conn);
-		}
-
-		}
-
-		
+			echo "</table>";
+		} 
 
 
-		// Query the database for available rooms
-		$sql = "SELECT * FROM Room,Guests WHERE Room.available = FALSE AND Room.room_number=Guests.room_number_id";
+        // ------------ GUESTS LIST -------------
+        
+		$sql = "SELECT * FROM Guests JOIN Room ON Guests.room = Room.room_number";
 		$result = mysqli_query($conn, $sql);
 
 		if (mysqli_num_rows($result) > 0) {
+
 			// Display the list of available rooms and reservation form
-			echo "<h1>Occupated rooms</h1>";
+			echo "<h2>Guests rooms</h2>";
 			echo "<table>";
-			echo "<tr><th>Room Number</th><th>Room Type</th><th>Price</th><th>DELETE FROM</br>OCCUPATED</th></tr>";
+				echo "<tr><th>Room Number</th><th>Price</th><th>Name</th><th>Check in</th><th>Check out</th><th>Delete from</br>guests</th></tr>";
+
 			while ($row = mysqli_fetch_assoc($result)) {
-				echo "<tr>
-                <td>" . $row["room_number"] . "</td><td>" . $row["room_type"] . "</td><td>" . $row["room_price"] . "</td>
-                <td>" . $row["guest_name"] . "</td>
-                <td>" . $row["guest_id"] . "</td>
+				echo "<tr><td>" . $row["room"] . "</td><td>" . $row["room_price"] . "</td><td>" . $row["guest_name"] . "</td><td>" . $row["check_in_date"]. "</td><td>" .$row["check_out_date"]. "</td>";
+
                 
+                // ---------- inputs of guests ------------
+
+				echo "<td><form method='post' action='" . $_SERVER["PHP_SELF"] . "'>";
                 
-                
-                <td>";
-				echo "<form method='post' action='" . $_SERVER["PHP_SELF"] . "'>";
 				echo "<input type='hidden' name='room_number' value='" . $row["room_number"] . "'>";
 
-				echo "
-                <button class='delete' type='submit'>DELETE</button>
-                
-                </form></td></tr>";
+                echo "<input type='hidden' name='guest_id' value='" . $row["guest_id"] . "'>";
+
+				echo "<button class='delete' type='submit'>DELETE</button></form></td></tr>";
 			}
 			echo "</table>";
-		} else {
+		}
+        // --------------------------------------------
+        else {
 			echo "No rooms available";
 		}
 
 		// Close the database connection
 		mysqli_close($conn);
+        
 ?>
 
 </main>

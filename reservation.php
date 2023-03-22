@@ -36,8 +36,8 @@ echo '<div class="greeting"> <h3>Welcome, ' . $_SESSION["login"].'</h3>
 <form action="admin.php">
 <button type="submit" class="switcher">Check in</button></form>
 
-<form action="reservation.php">
-<button type="submit" class="switcher">Reservation</button></form>
+<form action="liberation.php">
+<button type="submit" class="switcher">Liberation</button></form>
 </div>
 </div>';
 
