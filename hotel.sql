@@ -36,7 +36,7 @@ VALUES
         'Single',
         100.00,
         1,
-        FALSE,
+        TRUE,
         1,
         'https://pixabay.com/get/g4f90912c837d5824524743d7fe0a0e1331c9729d8f996ab98b1fe66ee78731cee96ad80be27d4c3d248f2281dfc24a2aaab5e227af83104289dc1691cefbd7b5_1280.jpg'
     ),
@@ -63,7 +63,7 @@ VALUES
         'Single',
         100.00,
         1,
-        TRUE,
+        FALSE,
         1,
         'https://pixabay.com/get/g73e36cccada5e64926d7e90da5a558a8dab54d9865ad40afbff8887f016bea7d27196379a0d57d0664327c0567dd5d50cf2c07cc020a31ebbc017e988bc342bf_1280.jpg'
     ),
@@ -81,7 +81,7 @@ VALUES
         'Single',
         100.00,
         1,
-        TRUE,
+        FALSE,
         2,
         'https://pixabay.com/get/gcbc97664c16a9ab367bbb346ea377278936936345867d89044a60877bbe838df61fb95d4b4c1283a97256b2499a254a26e3200f82bb0dd9c5c7646bc5c7fbc29_1280.jpg'
     ),
@@ -108,7 +108,7 @@ VALUES
         'Single',
         100.00,
         1,
-        TRUE,
+        FALSE,
         2,
         'https://pixabay.com/get/g89e2b91aade6aa6890e996e92bf9bccd95b29f7fa3a2e29f8ab7bc26f93c66767ea17ad8907a45f0b5761eaaecadb60dfc9acb2e325a1e550dc9ffe98eaaf1a0_1280.jpg'
     ),
@@ -135,7 +135,7 @@ VALUES
         'Double',
         150.00,
         2,
-        TRUE,
+        FALSE,
         3,
         'https://pixabay.com/get/g357262fd7c6d73095f01070dcc95e7f3987bcd3e39bcbd8eec2102c0e00feee09b3e5d8a2cca86ff9a2385674b53fc6d14f5409be4080291e075d96527e15c67_1280.jpg'
     ),
@@ -153,7 +153,7 @@ VALUES
         'Single',
         100.00,
         1,
-        TRUE,
+        FALSE,
         3,
         'https://pixabay.com/get/gc28c83ee771d56423bcff783f82ab970ab3276fdce5ca61c4dbfed04e3cff3b03d3eccc05e6dcade4494e0399fd0d125d9768a49eaa91678b5007f97acb468a2_1280.jpg'
     );
@@ -164,77 +164,96 @@ CREATE TABLE Guests (
     guest_email VARCHAR(100) NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
     address VARCHAR(100) NOT NULL,
-    PRIMARY KEY (guest_id)
+    room INT NOT NULL,
+    check_in_date DATE NOT NULL,
+    check_out_date DATE NOT NULL,
+    PRIMARY KEY (guest_id),
+    FOREIGN KEY (room) REFERENCES Room(room_number)
 );
 
 INSERT INTO
-    Guests (guest_name, guest_email, phone_number, address)
+    Guests (
+        guest_name,
+        guest_email,
+        phone_number,
+        address,
+        room,
+        check_in_date,
+        check_out_date
+    )
 VALUES
     (
         'John Smith',
         'john.smith@example.com',
         '555-1234',
-        '123 Main St, Anytown USA'
+        '123 Main St, Anytown USA',
+        304,
+        '2023-03-05',
+        '2023-04-08'
     ),
     (
         'Jane Doe',
         'jane.doe@example.com',
         '555-5678',
-        '456 Maple Ave, Anytown USA'
+        '456 Maple Ave, Anytown USA',
+        302,
+        '2023-03-05',
+        '2023-04-08'
     ),
     (
         'David Lee',
         'david.lee@example.com',
         '555-9012',
-        '789 Oak St, Anytown USA'
+        '789 Oak St, Anytown USA',
+        204,
+        '2023-03-05',
+        '2023-04-08'
     ),
     (
         'Sarah Johnson',
         'sarah.johnson@example.com',
         '555-3456',
-        '101 Elm St, Anytown USA'
+        '101 Elm St, Anytown USA',
+        201,
+        '2023-03-05',
+        '2023-04-08'
     ),
     (
         'Michael Chen',
         'michael.chen@example.com',
         '555-7890',
-        '222 Cedar Ave, Anytown USA'
-    ),
-    (
-        'Emily Wilson',
-        'emily.wilson@example.com',
-        '555-2345',
-        '333 Pine St, Anytown USA'
-    ),
-    (
-        'Daniel Kim',
-        'daniel.kim@example.com',
-        '555-6789',
-        '444 Birch Rd, Anytown USA'
+        '222 Cedar Ave, Anytown USA',
+        104,
+        '2023-03-05',
+        '2023-04-08'
     );
 
 CREATE TABLE Reservation (
     reservation_id INT NOT NULL AUTO_INCREMENT,
-    guest_id INT NOT NULL,
-    room_number INT NOT NULL,
+    room INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
     check_in_date DATE NOT NULL,
     check_out_date DATE NOT NULL,
     PRIMARY KEY (reservation_id),
-    FOREIGN KEY (guest_id) REFERENCES Guests(guest_id),
-    FOREIGN KEY (room_number) REFERENCES Room(room_number)
+    FOREIGN KEY (room) REFERENCES Room(room_number)
 );
 
 INSERT INTO
     Reservation (
-        guest_id,
-        room_number,
+        room,
+        name,
         check_in_date,
         check_out_date
     )
 VALUES
-    (5, 101, '2023-03-20', '2023-03-23'),
-    (6, 105, '2023-04-05', '2023-04-08'),
-    (7, 203, '2023-05-01', '2023-05-03');
+    (101, 'Emily Wilson', '2023-03-20', '2023-03-23'),
+    (105, 'Daniel Kim', '2023-04-05', '2023-04-08'),
+    (
+        203,
+        'Petro Neugomonny',
+        '2023-05-01',
+        '2023-05-03'
+    );
 
 CREATE TABLE Employee (
     employee_id INT NOT NULL AUTO_INCREMENT,

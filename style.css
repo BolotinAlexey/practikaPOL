@@ -38,6 +38,11 @@ h1 {
   text-shadow: 3px 3px rgba(230, 15, 69, 1);
   margin-bottom: 40px;
 }
+input {
+  margin: 10px;
+  text-align: center;
+}
+
 .logo {
   padding-left: 20px;
   font-size: 1em;
